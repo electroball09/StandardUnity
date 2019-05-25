@@ -1,0 +1,3 @@
+[submodule "graphy"]
+	path = graphy
+	url = https://github.com/electroball09/graphy.git
