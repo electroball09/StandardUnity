@@ -8,6 +8,9 @@ Assets/AssetStoreTools*
 */Assets/Submodules/*/
 configuration/**.meta
 graphy/**.meta
+code/**.meta
+*.meta
+StandardUnity/**.meta
 
 # Visual Studio cache directory
 .vs/
