@@ -6,6 +6,8 @@
 Assets/AssetStoreTools*
 
 */Assets/Submodules/*/
+**/Assets/Rewired/
+**/Assets/Rewired/
 
 # Visual Studio cache directory
 .vs/
