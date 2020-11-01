@@ -58,7 +58,7 @@ public class Rosace
     {
         public static void Update()
         {
-            Debug.Log("rosace update!");
+
         }
     }
 }
