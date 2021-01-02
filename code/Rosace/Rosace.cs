@@ -34,7 +34,7 @@ public class Rosace
 
         for (int i = 0; i < newSystems.Length; i++)
         {
-            if (newSystems[i].type == typeof(Update))
+            if (newSystems[i].type == typeof(FixedUpdate))
             {
                 for (int j = newSystems.Length - 1; j > i; j--)
                 {

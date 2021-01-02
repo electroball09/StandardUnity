@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class CursorDefault : MonoBehaviour
 {
+    public delegate void CursorToggledEvent(bool toggledOn);
+    public static event CursorToggledEvent CursorToggled;
+
+    private bool consoleIsOpen = false;
+    public delegate void ConsoleToggledEvent(bool toggledOn);
+    public static event ConsoleToggledEvent ConsoleToggled;
+    
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnLoad()
     {
@@ -15,6 +22,15 @@ public class CursorDefault : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
-            CursorUtil.ToggleCursor();
+        {
+            bool isOn = CursorUtil.ToggleCursor();
+            CursorToggled?.Invoke(isOn);
+        }
+
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            consoleIsOpen = !consoleIsOpen;
+            ConsoleToggled?.Invoke(consoleIsOpen);
+        }
     }
 }
