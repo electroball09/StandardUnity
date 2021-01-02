@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,6 +37,16 @@ public class EZStateMachine<TSubtype> where TSubtype : EZState<TSubtype>, new()
             Name = name;
     }
 
+    public TSubtype GetState()
+    {
+        return currState;
+    }
+
+    public T GetStateAs<T>() where T : TSubtype
+    {
+        return currState as T;
+    }
+
     public void UpdateNextState()
     {
         if (nextState != null)
@@ -45,28 +56,42 @@ public class EZStateMachine<TSubtype> where TSubtype : EZState<TSubtype>, new()
             currState = nextState;
             nextState = null;
             StateChanged?.Invoke(currState);
-            
+
             Debug.LogFormat("[EZStateMachine {0}] switched to {1}", Name, currState.GetType());
         }
     }
 
     public bool SwitchStateNext<T>(bool force = false) where T : TSubtype, new()
     {
+        T val = null;
+        return SwitchStateNext<T>(out val, force);
+    }
+
+    public bool SwitchStateNext<T>(out T newState, bool force = false) where T : TSubtype, new()
+    {
         T next = EZState<TSubtype>.Create<T>(this);
 
         if (currState == null || currState.CanSwitchToState<T>() == true || force)
         {
             nextState = next;
+            newState = next;
             return true;
         }
         
         Debug.LogFormat("[EZStateMachine {0}] state {1} blocked switch to {2}", Name, currState.GetType(), next.GetType());
+        newState = null;
         return false;
     }
 
     public bool SwitchStateImmediate<T>(bool force = false) where T : TSubtype, new()
     {
-        bool switched = SwitchStateNext<T>(force);
+        T val = null;
+        return SwitchStateImmediate<T>(out val, force);
+    }
+
+    public bool SwitchStateImmediate<T>(out T newState, bool force = false) where T : TSubtype, new()
+    {
+        bool switched = SwitchStateNext<T>(out newState, force);
         if (switched)
             UpdateNextState();
         return switched;
