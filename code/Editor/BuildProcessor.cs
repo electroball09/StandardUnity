@@ -14,8 +14,14 @@ public class BuildProcessor : IPostprocessBuildWithReport
     {
         //if (report.summary.result != BuildResult.Succeeded) return;
 
+        if (report.summary.platform != BuildTarget.StandaloneWindows64)
+            return;
+
         string outputPath = new FileInfo(report.summary.outputPath).Directory.FullName + "/Config/";
         string sourcePath = Directory.GetCurrentDirectory() + "/Config/";
+
+        if (!Directory.Exists(sourcePath))
+            Directory.CreateDirectory(sourcePath);
 
         Debug.LogFormat("Copying Config file from {0} to {1}", sourcePath, outputPath);
 

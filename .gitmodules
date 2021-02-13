@@ -7,6 +7,3 @@
 [submodule "UnityIngameDebugConsole"]
 	path = UnityIngameDebugConsole
 url=https://github.com/electroball09/UnityIngameDebugConsole.git
-[submodule "stateless"]
-	path = stateless
-	url = https://github.com/electroball09/stateless.git

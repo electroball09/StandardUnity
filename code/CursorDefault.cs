@@ -21,7 +21,7 @@ public class CursorDefault : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Z) && !consoleIsOpen)
         {
             bool isOn = CursorUtil.ToggleCursor();
             CursorToggled?.Invoke(isOn);
