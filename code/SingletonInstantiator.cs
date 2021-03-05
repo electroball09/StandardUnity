@@ -9,10 +9,7 @@ public class SingletonInstantiator : MonoBehaviour
     {
         if (Application.platform != RuntimePlatform.Android)
         {
-            GameObject console = Resources.Load("IngameDebugConsole") as GameObject;
 
-            Instantiate(console);
-            DontDestroyOnLoad(console);
         }
     }
 }

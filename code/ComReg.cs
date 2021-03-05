@@ -29,6 +29,15 @@ public static class ComReg
 
     static readonly Dictionary<string, Com> registeredCommands = new Dictionary<string, Com>();
 
+    static ComReg()
+    {
+        AddCom("help", () => LogComs(), "Prints all commands");
+        AddCom("helpcom", (string s) => LogComDesc(s), "Prints help about a command");
+        AddCom("log", (string s) => Debug.Log(s), "Prints to the log");
+        AddCom("warn", (string s) => Debug.LogWarning(s), "Prints a warning");
+        AddCom("error", (string s) => Debug.LogError(s), "Prints an error");
+    }
+
     public static void AddCom(object sourceObj, string name, MethodInfo methodInfo, string desc)
     {
         if (name.IndexOf(' ') != -1)
@@ -129,6 +138,17 @@ public static class ComReg
 
         Com c = registeredCommands[command];
 
+        if (c.parameters.Length == 1 && c.parameters[0].ParameterType == typeof(string))
+        {
+            if (vars.Length == 1)
+            {
+                Debug.LogError("Needs to have a string!");
+                return;
+            }
+            c.method.Invoke(c.sourceObject, new object[] { commandString.MinusFirst(command.Length + 1) });
+            return;
+        }
+
         if (vars.Length - 1 != c.parameters.Length)
         {
             Debug.LogError($"Parameter mismatch, params should be:  {c.GetParamsTypeStr()}");
@@ -142,5 +162,30 @@ public static class ComReg
         }
 
         c.method.Invoke(c.sourceObject, objParams);
+    }
+
+    public static void LogComs()
+    {
+        Debug.Log("Type \"helpcom [command]\" to see more info");
+        Debug.Log($"Registered commands [{registeredCommands.Count}]:");
+        foreach (var com in registeredCommands.Values)
+        {
+            Debug.Log($" {com.name} - {com.GetParamsTypeStr()}");
+        }
+    }
+
+    public static void LogComDesc(string cmd)
+    {
+        string[] vars = cmd.Split(' ');
+
+        if (!registeredCommands.ContainsKey(vars[0]))
+        {
+            Debug.LogError("Please input a command to help with");
+            return;
+        }
+
+        Com c = registeredCommands[vars[0]];
+
+        Debug.Log($"{c.name} - {c.GetParamsTypeStr()}\n  -{c.desc}");
     }
 }

@@ -4,6 +4,3 @@
 [submodule "configuration"]
 	path = configuration
 	url = https://github.com/electroball09/configuration.git
-[submodule "UnityIngameDebugConsole"]
-	path = UnityIngameDebugConsole
-url=https://github.com/electroball09/UnityIngameDebugConsole.git
