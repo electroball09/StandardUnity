@@ -1,6 +1,3 @@
 [submodule "configuration"]
 	path = configuration
 	url = https://github.com/electroball09/configuration.git
-[submodule "dear-imgui-unity"]
-	path = dear-imgui-unity
-	url = https://github.com/electroball09/dear-imgui-unity.git
