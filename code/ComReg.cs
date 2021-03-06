@@ -48,7 +48,7 @@ public static class ComReg
 
         foreach (var p in methodInfo.GetParameters())
         {
-            if (ConvertUtil.GetConverter(p.ParameterType, true) == default(Func<string, object>))
+            if (ConvertUtil.GetConverter(p.ParameterType, true) == default)
             {
                 Debug.LogError($"Command {name} tried to register invalid parameter type {p.ParameterType}");
                 return;
