@@ -14,6 +14,7 @@ public static class ComReg
         public string desc { get; set; }
         public MethodInfo method { get; set; }
         public ParameterInfo[] parameters { get; set; }
+        public string CommandSource { get; set; }
 
         public string GetParamsTypeStr()
         {
@@ -61,12 +62,13 @@ public static class ComReg
             name = name,
             desc = desc,
             method = methodInfo,
-            parameters = methodInfo.GetParameters() != null ? methodInfo.GetParameters() : new ParameterInfo[0]
+            parameters = methodInfo.GetParameters() != null ? methodInfo.GetParameters() : new ParameterInfo[0],
+            CommandSource = Environment.StackTrace
         };
 
         if (registeredCommands.ContainsKey(name))
         {
-            Debug.LogWarning($"Double registration of command {name}");
+            Debug.LogWarning($"Double registration of command {name}\nCommand 1: {registeredCommands[name].CommandSource}\nCommand 2: {c.CommandSource}");
             registeredCommands[name] = c;
         }
         else

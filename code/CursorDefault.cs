@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ICSharpCode.NRefactory.Ast;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,15 +11,17 @@ public class CursorDefault : MonoBehaviour
     public static bool consoleIsOpen = false;
     public delegate void ConsoleToggledEvent(bool toggledOn);
     public static event ConsoleToggledEvent ConsoleToggled;
+
+    public static CursorDefault inst;
     
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnLoad()
     {
         GameObject obj = new GameObject("CURSOR_DEFAULT");
         DontDestroyOnLoad(obj);
-        obj.AddComponent<CursorDefault>();
+        inst = obj.AddComponent<CursorDefault>();
 
-        ComReg.AddCom("tglcursor", ToggleCursor, "Toggles cursor active");
+        ComReg.AddCom(inst, "tglcursor", ToggleCursor, "Toggles cursor active");
 
         CursorToggled += (on) => Debug.Log("Cursor toggled: " + on);
     }
