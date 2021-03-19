@@ -147,6 +147,7 @@ public static class ComReg
                 Debug.LogError("Needs to have a string!");
                 return;
             }
+            Debug.Log($"runnning com: {commandString}");
             c.method.Invoke(c.sourceObject, new object[] { commandString.MinusFirst(command.Length + 1) });
             return;
         }
@@ -156,6 +157,8 @@ public static class ComReg
             Debug.LogError($"Parameter mismatch, params should be:  {c.GetParamsTypeStr()}");
             return;
         }
+
+        Debug.Log($"runnning com: {commandString}");
 
         object[] objParams = new object[c.parameters.Length];
         for (int i = 0; i < objParams.Length; i++)

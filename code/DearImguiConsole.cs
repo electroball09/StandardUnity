@@ -95,7 +95,10 @@ public class DearImguiConsole : MonoBehaviour
     public TimeSpan CmdFadeTime = TimeSpan.FromSeconds(1);
     public int selectedLog = 0;
     public string consoleInput = "";
+    public string lastConsoleInput = "";
     public bool FocusText = false;
+    public List<string> history = new List<string>();
+    public int historyLogIndex = -1;
 
     void Start()
     {
@@ -104,10 +107,43 @@ public class DearImguiConsole : MonoBehaviour
         CursorDefault.ConsoleToggled += CursorDefault_ConsoleToggled;
     }
 
+    void Update()
+    {
+        if (!CursorDefault.consoleIsOpen) return;
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            NavHistoryUp();
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            NavHistoryDown();
+    }
+
     private void CursorDefault_ConsoleToggled(bool toggledOn)
     {
         if (toggledOn)
             FocusText = true;
+    }
+
+    private void NavHistoryUp()
+    {
+        if (historyLogIndex < 0)
+            historyLogIndex = history.Count - 1;
+        else if (historyLogIndex != 0)
+            historyLogIndex--;
+
+        if (historyLogIndex > -1)
+            consoleInput = history[historyLogIndex];
+
+        Debug.Log(historyLogIndex);
+    }
+
+    private void NavHistoryDown()
+    {
+        if (historyLogIndex == -1) return;
+
+        historyLogIndex = historyLogIndex + 1 >= history.Count ? historyLogIndex : historyLogIndex + 1;
+
+        if (historyLogIndex > -1)
+            consoleInput = history[historyLogIndex];
     }
 
     unsafe void Layout()
@@ -215,12 +251,17 @@ public class DearImguiConsole : MonoBehaviour
 
         ImGui.Spacing();
 
+        lastConsoleInput = consoleInput;
         if (ImGui.InputTextWithHint("", ">", ref consoleInput, 150, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             ComReg.RunCom(consoleInput);
+            if (history.Count == 0 || history[history.Count - 1] != consoleInput)
+                history.Add(consoleInput);
             consoleInput = "";
             ImGui.SetKeyboardFocusHere();
         }
+        //if (consoleInput != lastConsoleInput)
+        //    historyLogIndex = -1;
         if (FocusText)
         {
             ImGui.SetKeyboardFocusHere(-1);
