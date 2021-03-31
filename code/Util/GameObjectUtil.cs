@@ -3,9 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface IHasSubcomponents
+{
+    void AppendComponents<T>(List<T> list);
+}
+
 public static class GameObjectUtil
 {
     static Dictionary<Type, IList> componentListCache = new Dictionary<Type, IList>();
+    static List<IHasSubcomponents> subCmpList = new List<IHasSubcomponents>();
 
     /// <summary>
     /// <i>DO NOT KEEP A REFERENCE TO THE LIST RETURNED BY THIS METHOD</i>
@@ -27,9 +33,18 @@ public static class GameObjectUtil
         }
 
         if (inChildren)
-            obj.GetComponentsInChildren<T>(true, list);
+        {
+            obj.GetComponentsInChildren(true, list);
+            obj.GetComponentsInChildren(true, subCmpList);
+        }
         else
-            obj.GetComponents<T>(list);
+        {
+            obj.GetComponents(list);
+            obj.GetComponents(subCmpList);
+        }
+
+        foreach (var subCmp in subCmpList)
+            subCmp.AppendComponents(list);
 
         return list;
     }

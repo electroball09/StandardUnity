@@ -19,6 +19,8 @@ public class Rosace
 
     public struct RosaceUpdateContext
     {
+        public static float delta = 0.00694f;
+
         public static void Init()
         {
             if (updateFunction != null) return;
@@ -37,20 +39,20 @@ public class Rosace
 
             public static void Update()
             {
-                if (Time.time - lastUpdateTime < 0.02f)
+                if (Time.time - lastUpdateTime < delta)
                     return;
 
                 lastUpdateTime = Time.time;
 
                 ctParams = new RosaceUpdateContext()
                 {
-                    deltaTime = 0.02f,
-                    constantMultiplier = 0.02f / 0.02f
+                    deltaTime = delta,
+                    constantMultiplier = delta / 0.02f
                 };
 
                 UpdateList(rosaceUpdaters);
 
-                Physics.Simulate(0.02f);
+                Physics.Simulate(delta);
 
                 PostUpdateList(rosaceUpdaters);
             }
