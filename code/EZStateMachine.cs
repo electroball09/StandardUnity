@@ -27,6 +27,7 @@ public class EZStateMachine<TSubtype> where TSubtype : EZState<TSubtype>, new()
     public event StateChangedEvent StateChanged;
 
     public string Name { get; set; }
+    public bool StateChangeLogging { get; set; } = true;
 
     private TSubtype currState { get; set; }
     private TSubtype nextState;
@@ -56,7 +57,8 @@ public class EZStateMachine<TSubtype> where TSubtype : EZState<TSubtype>, new()
             currState?.Exit();
             currState = nextState;
             nextState = null;
-            Debug.LogFormat("[EZStateMachine {0}] switched to {1}", Name, currState?.GetType());
+            if (StateChangeLogging)
+                Debug.LogFormat("[EZStateMachine {0}] switched to {1}", Name, currState?.GetType());
             StateChangedPreEnter?.Invoke(currState);
             currState.Enter();
             StateChanged?.Invoke(currState);
