@@ -39,6 +39,8 @@ public class Rosace
 
             public static void Update()
             {
+                if (!Application.isPlaying) return;
+
                 if (Time.time - lastUpdateTime < delta)
                     return;
 
