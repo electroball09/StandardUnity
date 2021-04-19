@@ -10,12 +10,15 @@ public interface IDebugViz
 
 public class DearImguiDebugViz : MonoBehaviour
 {
-    static List<DearImguiDebugViz> vizs = new List<DearImguiDebugViz>();
+    static List<DearImguiDebugViz> vizs;
     static bool p_open = true;
     static bool doDebugViz = true;
 
     static DearImguiDebugViz()
     {
+        if (vizs != null) return;
+        vizs = new List<DearImguiDebugViz>();
+
         ImGuiUn.Layout += ImGuiUn_Layout;
 
         ComReg.AddCom("debugviz", () => doDebugViz = !doDebugViz, "toggles debug viz window");
@@ -25,22 +28,27 @@ public class DearImguiDebugViz : MonoBehaviour
     {
         if (!doDebugViz) return;
 
-        ImGuiWindowFlags flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoNavFocus | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.HorizontalScrollbar;
+        ImGuiWindowFlags flags = ImGuiWindowFlags.NoNavFocus | ImGuiWindowFlags.NoFocusOnAppearing
+            | ImGuiWindowFlags.HorizontalScrollbar;
         ImGui.SetNextWindowBgAlpha(0.35f);
-        ImGui.SetNextWindowSize(new Vector2(300, 400));
+        ImGui.SetNextWindowSize(new Vector2(400, 300), ImGuiCond.FirstUseEver);
         if (ImGui.Begin("debug viz", ref p_open, flags))
         {
             ImGuiTabBarFlags f = ImGuiTabBarFlags.NoCloseWithMiddleMouseButton | ImGuiTabBarFlags.TabListPopupButton;
-            ImGui.BeginTabBar("debug_viz_tab", f);
-            foreach (var v in vizs)
+            if (ImGui.BeginTabBar("debug_viz_tab", f))
             {
-                if (ImGui.BeginTabItem(v.gameObject.name))
+                foreach (var v in vizs)
                 {
-                    v.DrawDebugViz();
-                    ImGui.EndTabItem();
+                    if (ImGui.BeginTabItem(v.gameObject.name))
+                    {
+                        v.DrawDebugViz();
+                        ImGui.EndTabItem();
+                    }
                 }
+                ImGui.EndTabBar();
             }
-            ImGui.EndTabBar();
+
+            ImGui.End();
         }
     }
 
@@ -57,13 +65,13 @@ public class DearImguiDebugViz : MonoBehaviour
     public void DrawDebugViz()
     {
         bool _active = gameObject.activeInHierarchy;
-        ImGui.Checkbox("gameobject active", ref _active);
-        if (_active != gameObject.activeInHierarchy)
+        if (ImGui.Checkbox("gameobject active", ref _active))
             gameObject.SetActive(_active);
 
         ImGui.Spacing();
 
-        ImGuiTabBarFlags f = ImGuiTabBarFlags.NoCloseWithMiddleMouseButton | ImGuiTabBarFlags.TabListPopupButton;
+        ImGuiTabBarFlags f = ImGuiTabBarFlags.NoCloseWithMiddleMouseButton | ImGuiTabBarFlags.TabListPopupButton 
+            | ImGuiTabBarFlags.FittingPolicyDefault | ImGuiTabBarFlags.Reorderable;
         if (ImGui.BeginTabBar(gameObject.name, f))
         {
             gameObject.SendMessage<IDebugViz>

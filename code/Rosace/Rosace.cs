@@ -20,6 +20,7 @@ public class Rosace
     public struct RosaceUpdateContext
     {
         public static float delta = 0.00694f;
+        public static bool doUpdate = false;
 
         public static void Init()
         {
@@ -40,11 +41,12 @@ public class Rosace
             public static void Update()
             {
                 if (!Application.isPlaying) return;
+                if (!doUpdate) return;
 
                 if (Time.time - lastUpdateTime < delta)
                     return;
 
-                lastUpdateTime = Time.time;
+                int numUpdates = Mathf.FloorToInt((Time.time - lastUpdateTime) / delta);
 
                 ctParams = new RosaceUpdateContext()
                 {
@@ -52,11 +54,18 @@ public class Rosace
                     constantMultiplier = delta / 0.02f
                 };
 
-                UpdateList(rosaceUpdaters);
+                for (int i = 0; i < numUpdates; i++)
+                {
+                    ctParams.time = lastUpdateTime + (delta * (i + 1));
 
-                Physics.Simulate(delta);
+                    UpdateList(rosaceUpdaters);
 
-                PostUpdateList(rosaceUpdaters);
+                    Physics.Simulate(delta);
+
+                    PostUpdateList(rosaceUpdaters);
+                }
+
+                lastUpdateTime = Time.time;
             }
 
             public static void UpdateList(IEnumerable<IRosaceUpdate> list)
@@ -76,6 +85,7 @@ public class Rosace
 
         public float deltaTime { get; private set; }
         public float constantMultiplier { get; private set; }
+        public float time { get; private set; }
 
         public void UpdateGameObject(GameObject obj)
         {

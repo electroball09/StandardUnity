@@ -22,6 +22,8 @@ public class BuildProcessor : IPostprocessBuildWithReport
 
         if (!Directory.Exists(sourcePath))
             Directory.CreateDirectory(sourcePath);
+        if (Directory.Exists(outputPath))
+            Directory.Delete(outputPath);
 
         Debug.LogFormat("Copying Config file from {0} to {1}", sourcePath, outputPath);
 

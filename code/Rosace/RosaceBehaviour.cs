@@ -6,7 +6,7 @@ public class RosaceBehaviour : MonoBehaviour, IRosaceUpdate
 {
     public bool IsValidUpdater()
     {
-        return this && gameObject && gameObject.activeInHierarchy;
+        return this && enabled && gameObject && gameObject.activeInHierarchy;
     }
 
     public virtual void PostRosaceUpdate(Rosace.RosaceUpdateContext context)
