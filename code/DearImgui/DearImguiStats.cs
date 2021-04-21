@@ -6,10 +6,11 @@ using System;
 
 public class DearImguiStats : MonoBehaviour
 {
-    static bool debugStats = true;
+    static bool debugStats = false;
     static bool p_open = true;
 
-    static DearImguiStats()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    static void init()
     {
         ImGuiUn.Layout += DoImgui;
 

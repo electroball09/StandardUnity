@@ -175,7 +175,7 @@ public static class ComReg
         Debug.Log($"Registered commands [{registeredCommands.Count}]:");
         foreach (var com in registeredCommands.Values)
         {
-            Debug.Log($" {com.name} - {com.GetParamsTypeStr()}");
+            Debug.Log($" {com.name} - {com.GetParamsTypeStr()} - {com.method.DeclaringType}");
         }
     }
 

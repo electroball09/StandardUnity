@@ -98,6 +98,9 @@ public class Rosace
     {
         RosaceUpdateContext.Init();
 
+        ComReg.AddCom("rosace.update", (bool val) => RosaceUpdateContext.doUpdate = val);
+        ComReg.AddCom("rosace.delta", (float val) => RosaceUpdateContext.delta = val);
+
         Debug.Log("ROSACE INJECTED");
     }
 

@@ -12,9 +12,10 @@ public class DearImguiDebugViz : MonoBehaviour
 {
     static List<DearImguiDebugViz> vizs;
     static bool p_open = true;
-    static bool doDebugViz = true;
+    static bool doDebugViz = false;
 
-    static DearImguiDebugViz()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    static void init()
     {
         if (vizs != null) return;
         vizs = new List<DearImguiDebugViz>();
