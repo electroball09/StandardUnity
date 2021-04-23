@@ -56,9 +56,18 @@ public static class ComReg
             }
         }
 
+        if (sourceObj == null)
+        {
+            if (!methodInfo.IsStatic)
+            {
+                //Debug.LogWarning($"Tried to register non-static method with no class instance to command {name}\nWill try with methods declaring type - {methodInfo.DeclaringType}");
+                sourceObj = Activator.CreateInstance(methodInfo.DeclaringType);
+            }
+        }
+
         Com c = new Com()
         {
-            sourceObject = sourceObj != null ? sourceObj : Activator.CreateInstance(methodInfo.DeclaringType),
+            sourceObject = sourceObj,
             name = name,
             desc = desc,
             method = methodInfo,
@@ -127,7 +136,7 @@ public static class ComReg
         AddCom(sourceObj, name, act.Method, desc);
     }
 
-    public static void RunCom(string commandString)
+    public static bool RunCom(string commandString)
     {
         string[] vars = commandString.Split(' ');
         string command = vars[0];
@@ -135,7 +144,7 @@ public static class ComReg
         if (!registeredCommands.ContainsKey(command))
         {
             Debug.LogError($"Command {command} is not registered!");
-            return;
+            return false;
         }
 
         Com c = registeredCommands[command];
@@ -145,17 +154,17 @@ public static class ComReg
             if (vars.Length == 1)
             {
                 Debug.LogError("Needs to have a string!");
-                return;
+                return false;
             }
             Debug.Log($"runnning com: {commandString}");
             c.method.Invoke(c.sourceObject, new object[] { commandString.MinusFirst(command.Length + 1) });
-            return;
+            return true;
         }
 
         if (vars.Length - 1 != c.parameters.Length)
         {
             Debug.LogError($"Parameter mismatch, params should be:  {c.GetParamsTypeStr()}");
-            return;
+            return false;
         }
 
         Debug.Log($"runnning com: {commandString}");
@@ -167,6 +176,7 @@ public static class ComReg
         }
 
         c.method.Invoke(c.sourceObject, objParams);
+        return true;
     }
 
     public static void LogComs()
