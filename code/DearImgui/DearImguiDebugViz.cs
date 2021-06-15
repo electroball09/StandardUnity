@@ -22,7 +22,7 @@ public class DearImguiDebugViz : MonoBehaviour
 
         ImGuiUn.Layout += ImGuiUn_Layout;
 
-        ComReg.AddCom("debugviz", () => doDebugViz = !doDebugViz, "toggles debug viz window");
+        ComReg.AddCom("debug.viz", () => doDebugViz = !doDebugViz, "toggles debug viz window");
     }
 
     private static void ImGuiUn_Layout()

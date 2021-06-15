@@ -136,6 +136,15 @@ public static class ComReg
         AddCom(sourceObj, name, act.Method, desc);
     }
 
+    public static bool HasCom(string name)
+    {
+        foreach (var c in registeredCommands)
+            if (c.Key == name)
+                return true;
+
+        return false;
+    }
+
     public static bool RunCom(string commandString)
     {
         string[] vars = commandString.Split(' ');

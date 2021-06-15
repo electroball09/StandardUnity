@@ -18,7 +18,7 @@ public class DearImguiStats : MonoBehaviour
         style = new GUIStyle();
         style.padding = new RectOffset(4, 0, 0, 0);
 
-        ComReg.AddCom("debugstats", () => debugStats = !debugStats, "toggles debug stats");
+        ComReg.AddCom("debug.stats", () => debugStats = !debugStats, "toggles debug stats");
     }
 
     static void DoImgui()
