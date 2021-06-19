@@ -7,12 +7,12 @@ using System.IO;
 
 public class AssetUtil
 {
-    public static void CreateAsset<T>(string path = "Assets/") where T : ScriptableObject
+    public static T CreateAsset<T>(string path = "Assets/") where T : ScriptableObject
     {
-        CreateAsset(typeof(T), path);
+        return CreateAsset(typeof(T), path) as T;
     }
 
-    public static void CreateAsset(Type type, string path = "Assets/")
+    public static ScriptableObject CreateAsset(Type type, string path = "Assets/")
     {
         ScriptableObject asset = ScriptableObject.CreateInstance(type);
         if (asset == null)
@@ -30,5 +30,7 @@ public class AssetUtil
         Selection.activeObject = asset;
 
         Debug.Log("Created asset: " + pathName);
+
+        return asset;
     }
 }
