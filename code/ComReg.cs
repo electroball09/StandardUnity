@@ -136,6 +136,11 @@ public static class ComReg
         AddCom(sourceObj, name, act.Method, desc);
     }
 
+    public static void DelCom(string name)
+    {
+        registeredCommands.Remove(name);
+    }
+
     public static bool HasCom(string name)
     {
         foreach (var c in registeredCommands)

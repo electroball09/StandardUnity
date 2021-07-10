@@ -14,7 +14,6 @@ public class Autoexec
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Init()
     {
-        Debug.Log(File.Exists("autoexec.cfg"));
         if (File.Exists("autoexec.cfg"))
         {
             ProcessLines(File.ReadAllLines("autoexec.cfg"));

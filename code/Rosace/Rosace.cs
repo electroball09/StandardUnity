@@ -16,6 +16,7 @@ public class Rosace
 {
     static PlayerLoopSystem.UpdateFunction updateFunction;
     static List<IRosaceUpdate> rosaceUpdaters = new List<IRosaceUpdate>();
+    static List<IRosaceUpdate> pendingUpdaters = new List<IRosaceUpdate>();
 
     public struct RosaceUpdateContext
     {
@@ -45,6 +46,9 @@ public class Rosace
 
                 if (Time.time - lastUpdateTime < delta)
                     return;
+
+                rosaceUpdaters.AddRange(pendingUpdaters);
+                pendingUpdaters.Clear();
 
                 int numUpdates = Mathf.FloorToInt((Time.time - lastUpdateTime) / delta);
 
@@ -91,6 +95,13 @@ public class Rosace
         {
             RosaceUpdate.UpdateList(obj.FastGetComponents<IRosaceUpdate>());
         }
+
+        public void UpdateGameObject(IRosaceUpdate source, GameObject obj)
+        {
+            var l = obj.FastGetComponents<IRosaceUpdate>();
+            l.Remove(source);
+            RosaceUpdate.UpdateList(l);
+        }
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -112,7 +123,7 @@ public class Rosace
             return;
         }
 
-        rosaceUpdaters.Add(update);
+        pendingUpdaters.Add(update);
     }
 
     public static void DeregisterUpdater(IRosaceUpdate update)
