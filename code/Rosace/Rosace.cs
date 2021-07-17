@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
+using UnityEngine.Profiling;
 
 public interface IRosaceUpdate
 {
@@ -62,11 +63,15 @@ public class Rosace
                 {
                     ctParams.time = lastUpdateTime + (delta * (i + 1));
 
+                    Profiler.BeginSample("Rosace Update");
                     UpdateList(rosaceUpdaters);
+                    Profiler.EndSample();
 
                     Physics.Simulate(delta);
 
+                    Profiler.BeginSample("Rosace Post Update");
                     PostUpdateList(rosaceUpdaters);
+                    Profiler.EndSample();
                 }
 
                 lastUpdateTime = Time.time;
