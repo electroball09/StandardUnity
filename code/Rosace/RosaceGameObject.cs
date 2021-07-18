@@ -9,12 +9,13 @@ public class RosaceGameObject : RosaceBehaviour
         Rosace.RegisterUpdater(this);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Rosace.DeregisterUpdater(this);
     }
 
-    public override void RosaceUpdate(Rosace.RosaceUpdateContext context)
+    protected override void _RosaceUpdate(Rosace.RosaceUpdateContext context)
     {
         context.UpdateGameObject(this, gameObject);
     }
