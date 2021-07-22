@@ -50,6 +50,12 @@ public class Rosace
             {
                 if (!Application.isPlaying) return;
 
+                if (updateScale < 1f)
+                {
+                    Debug.LogWarning("Rosace does not support update scales < 1.  Scale will be reset to 1");
+                    updateScale = 1f;
+                }
+
                 rosaceUpdaters.AddRange(pendingUpdaters);
                 pendingUpdaters.Clear();
 
@@ -76,8 +82,6 @@ public class Rosace
                     Profiler.BeginSample("Rosace Post Update");
                     PostUpdateList(rosaceUpdaters);
                     Profiler.EndSample();
-
-                    //lastUpdateTime = Time.time;
                 }
 
                 if (numUpdates > 0)
