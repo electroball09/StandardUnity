@@ -19,6 +19,7 @@ public class Rosace
     public static float updateScale = 1f;
     public static float timeScale = 1f;
     public static float time { get; private set; }
+    public static float realTime { get; private set; }
     public static float numUpdates { get; private set; }
 
     static PlayerLoopSystem.UpdateFunction updateFunction;
@@ -45,6 +46,7 @@ public class Rosace
             static RosaceUpdateContext ctParams;
             static float lastUpdateTime = 0f;
             static float lastRosaceUpdateTime = 0f;
+            //static float trackedRealTime = 0f;
 
             public static void Update()
             {
@@ -56,10 +58,12 @@ public class Rosace
                     updateScale = 1f;
                 }
 
+                realTime += Time.unscaledDeltaTime;
+
                 rosaceUpdaters.AddRange(pendingUpdaters);
                 pendingUpdaters.Clear();
 
-                numUpdates = Mathf.FloorToInt((Time.time - lastUpdateTime) / (delta / updateScale));
+                numUpdates = Mathf.FloorToInt((realTime - lastUpdateTime) / (delta / updateScale));
 
                 ctParams = new RosaceUpdateContext()
                 {
@@ -69,7 +73,8 @@ public class Rosace
 
                 for (int i = 0; i < numUpdates; i++)
                 {
-                    Rosace.time = lastRosaceUpdateTime + (ctParams.deltaTime * i + ctParams.deltaTime);
+                    //Rosace.time = lastRosaceUpdateTime + (ctParams.deltaTime * i + ctParams.deltaTime);
+                    Rosace.time += ctParams.deltaTime;
 
                     Physics.SyncTransforms();
 
@@ -86,7 +91,7 @@ public class Rosace
 
                 if (numUpdates > 0)
                 {
-                    lastUpdateTime = Time.time;
+                    lastUpdateTime = realTime;
                     lastRosaceUpdateTime = Rosace.time;
                 }
             }

@@ -59,7 +59,7 @@ public class DearImguiStats : MonoBehaviour
         Text($"{Environment.OSVersion}");
         Text($"{Environment.MachineName} - {Environment.UserName}");
         Text($"{1 / Time.deltaTime}fps  {Time.deltaTime}ms  time {Time.time}");
-        Text($"rosace time {Rosace.time} delta {Rosace.delta} numUpd {Rosace.numUpdates}");
+        Text($"rosace time {Rosace.time} delta {Rosace.delta} upd {Rosace.numUpdates} real {Rosace.realTime}");
     }
 
     static bool BeginWindow(string name, float x, float y, float width, float height)
