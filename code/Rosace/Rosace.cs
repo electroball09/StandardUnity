@@ -76,13 +76,13 @@ public class Rosace
                     //Rosace.time = lastRosaceUpdateTime + (ctParams.deltaTime * i + ctParams.deltaTime);
                     Rosace.time += ctParams.deltaTime;
 
+                    Physics.Simulate(ctParams.deltaTime);
+
                     Physics.SyncTransforms();
 
                     Profiler.BeginSample("Rosace Update");
                     UpdateList(rosaceUpdaters);
                     Profiler.EndSample();
-
-                    Physics.Simulate(ctParams.deltaTime);
 
                     Profiler.BeginSample("Rosace Post Update");
                     PostUpdateList(rosaceUpdaters);

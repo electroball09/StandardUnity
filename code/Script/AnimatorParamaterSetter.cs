@@ -2,23 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class AnimatorParamGroup
+{
+    public List<AnimatorFloatParam> FloatParams = new List<AnimatorFloatParam>();
+    public List<AnimatorIntParam> IntParams = new List<AnimatorIntParam>();
+    public List<AnimatorBoolParam> BoolParams = new List<AnimatorBoolParam>();
+    public List<AnimatorTriggerParam> TriggerParams = new List<AnimatorTriggerParam>();
+
+    public void SetAllParams(Animator anim)
+    {
+        foreach (var p in FloatParams)
+            anim.SetFloat(p.paramName, p.param);
+        foreach (var p in IntParams)
+            anim.SetInteger(p.paramName, p.param);
+        foreach (var p in BoolParams)
+            anim.SetBool(p.paramName, p.param);
+        foreach (var p in TriggerParams)
+            anim.SetTrigger(p.paramName);
+    }
+}
+[System.Serializable]
+public class AnimatorParam { public string paramName; public float delay;[System.NonSerialized] public bool hasBeenSet = false; }
+[System.Serializable]
+public class AnimatorFloatParam : AnimatorParam { public float param; }
+[System.Serializable]
+public class AnimatorIntParam : AnimatorParam { public int param; }
+[System.Serializable]
+public class AnimatorBoolParam : AnimatorParam { public bool param; }
+[System.Serializable]
+public class AnimatorTriggerParam : AnimatorParam { }
+
 public class AnimatorParamaterSetter : MonoBehaviour
 {
-    [System.Serializable]
-    public class Param { public string paramName; public float delay; [System.NonSerialized] public bool hasBeenSet = false; }
-    [System.Serializable]
-    public class FloatParam : Param { public float param; }
-    [System.Serializable]
-    public class IntParam : Param { public int param; }
-    [System.Serializable]
-    public class BoolParam : Param { public bool param; }
-    [System.Serializable]
-    public class TriggerParam : Param { }
-
-    public List<FloatParam> floatParams = new List<FloatParam>();
-    public List<IntParam> intParams = new List<IntParam>();
-    public List<BoolParam> boolparams = new List<BoolParam>();
-    public List<TriggerParam> triggerParams = new List<TriggerParam>();
+    public AnimatorParamGroup paramsToSet = new AnimatorParamGroup();
 
     [Header("debug")]
     public float startTime;
@@ -32,9 +49,6 @@ public class AnimatorParamaterSetter : MonoBehaviour
         if (!anim) return;
 
         StartCoroutine(coroutine());
-
-        foreach (var fp in floatParams)
-            anim.SetFloat(fp.paramName, fp.param);
     }
 
     IEnumerator coroutine()
@@ -42,28 +56,28 @@ public class AnimatorParamaterSetter : MonoBehaviour
         do
         {
             yield return null;
-            foreach (var p in floatParams)
+            foreach (var p in paramsToSet.FloatParams)
                 if (Time.time - startTime >= p.delay && !p.hasBeenSet)
                 {
                     Debug.Log($"setting float param {p.paramName} to val {p.param}");
                     anim.SetFloat(p.paramName, p.param);
                     p.hasBeenSet = true;
                 }
-            foreach (var p in intParams)
+            foreach (var p in paramsToSet.IntParams)
                 if (Time.time - startTime >= p.delay && !p.hasBeenSet)
                 {
                     Debug.Log($"setting int param {p.paramName} to val {p.param}");
                     anim.SetInteger(p.paramName, p.param);
                     p.hasBeenSet = true;
                 }
-            foreach (var p in boolparams)
+            foreach (var p in paramsToSet.BoolParams)
                 if (Time.time - startTime >= p.delay && !p.hasBeenSet)
                 {
                     Debug.Log($"setting bool param {p.paramName} to val {p.param}");
                     anim.SetBool(p.paramName, p.param);
                     p.hasBeenSet = true;
                 }
-            foreach (var p in triggerParams)
+            foreach (var p in paramsToSet.TriggerParams)
                 if (Time.time - startTime >= p.delay && !p.hasBeenSet)
                 {
                     Debug.Log($"setting trigger {p.paramName}");
@@ -82,7 +96,7 @@ public class AnimatorParamaterSetter : MonoBehaviour
 
     private bool AreAllParamsSet()
     {
-        bool checkList(IEnumerable<Param> list)
+        bool checkList(IEnumerable<AnimatorParam> list)
         {
             foreach (var p in list)
                 if (Time.time - startTime < p.delay)
@@ -90,6 +104,6 @@ public class AnimatorParamaterSetter : MonoBehaviour
             return true;
         }
 
-        return checkList(floatParams) && checkList(intParams) && checkList(boolparams) && checkList(triggerParams);
+        return checkList(paramsToSet.FloatParams) && checkList(paramsToSet.IntParams) && checkList(paramsToSet.BoolParams) && checkList(paramsToSet.TriggerParams);
     }
 }
