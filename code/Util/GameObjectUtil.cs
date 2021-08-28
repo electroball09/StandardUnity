@@ -22,11 +22,9 @@ public static class GameObjectUtil
     /// <returns></returns>
     public static List<T> FastGetComponents<T>(this GameObject obj, bool inChildren = true)
     {
-        List<T> list;
         Type subType = typeof(T);
-        if (componentListCache.ContainsKey(subType))
-            list = (List<T>)componentListCache[subType];
-        else
+        componentListCache.TryGetValue(subType, out var list);
+        if (list == null)
         {
             list = new List<T>();
             componentListCache.Add(subType, list);
@@ -34,19 +32,19 @@ public static class GameObjectUtil
 
         if (inChildren)
         {
-            obj.GetComponentsInChildren(true, list);
+            obj.GetComponentsInChildren(true, list as List<T>);
             obj.GetComponentsInChildren(true, subCmpList);
         }
         else
         {
-            obj.GetComponents(list);
+            obj.GetComponents(list as List<T>);
             obj.GetComponents(subCmpList);
         }
 
         foreach (var subCmp in subCmpList)
-            subCmp.AppendComponents(list);
+            subCmp.AppendComponents(list as List<T>);
 
-        return list;
+        return (List<T>)list;
     }
 
     public static void SendMessage<T>(this GameObject obj, Action<T> message)

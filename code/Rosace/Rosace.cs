@@ -15,14 +15,19 @@ public interface IRosaceUpdate
 
 public class Rosace
 {
+    public static float delta = 0.00694f;
+    public static float updateScale = 1f;
+    public static float timeScale = 1f;
+    public static float time { get; private set; }
+    public static float realTime { get; private set; }
+    public static float numUpdates { get; private set; }
+
     static PlayerLoopSystem.UpdateFunction updateFunction;
     static List<IRosaceUpdate> rosaceUpdaters = new List<IRosaceUpdate>();
     static List<IRosaceUpdate> pendingUpdaters = new List<IRosaceUpdate>();
 
     public struct RosaceUpdateContext
     {
-        public static float delta = 0.00694f;
-        public static bool doUpdate = false;
 
         public static void Init()
         {
@@ -31,6 +36,7 @@ public class Rosace
             updateFunction = RosaceUpdate.Update;
 
             Physics.autoSimulation = false;
+            Physics.autoSyncTransforms = false;
 
             PlayerLoopInjector.InjectSubsystem<Rosace, RosaceUpdate, FixedUpdate>(updateFunction);
         }
@@ -39,52 +45,65 @@ public class Rosace
         {
             static RosaceUpdateContext ctParams;
             static float lastUpdateTime = 0f;
+            static float lastRosaceUpdateTime = 0f;
+            //static float trackedRealTime = 0f;
 
             public static void Update()
             {
                 if (!Application.isPlaying) return;
-                if (!doUpdate) return;
 
-                if (Time.time - lastUpdateTime < delta)
-                    return;
+                if (updateScale < 1f)
+                {
+                    Debug.LogWarning("Rosace does not support update scales < 1.  Scale will be reset to 1");
+                    updateScale = 1f;
+                }
+
+                realTime += Time.unscaledDeltaTime;
 
                 rosaceUpdaters.AddRange(pendingUpdaters);
                 pendingUpdaters.Clear();
 
-                int numUpdates = Mathf.FloorToInt((Time.time - lastUpdateTime) / delta);
+                numUpdates = Mathf.FloorToInt((realTime - lastUpdateTime) / (delta / updateScale));
 
                 ctParams = new RosaceUpdateContext()
                 {
-                    deltaTime = delta,
-                    constantMultiplier = delta / 0.02f
+                    deltaTime = delta * timeScale,
+                    constantMultiplier = (delta * timeScale) / 0.02f
                 };
 
                 for (int i = 0; i < numUpdates; i++)
                 {
-                    ctParams.time = lastUpdateTime + (delta * (i + 1));
+                    //Rosace.time = lastRosaceUpdateTime + (ctParams.deltaTime * i + ctParams.deltaTime);
+                    Rosace.time += ctParams.deltaTime;
+
+                    Physics.Simulate(ctParams.deltaTime);
+
+                    Physics.SyncTransforms();
 
                     Profiler.BeginSample("Rosace Update");
                     UpdateList(rosaceUpdaters);
                     Profiler.EndSample();
-
-                    Physics.Simulate(delta);
 
                     Profiler.BeginSample("Rosace Post Update");
                     PostUpdateList(rosaceUpdaters);
                     Profiler.EndSample();
                 }
 
-                lastUpdateTime = Time.time;
+                if (numUpdates > 0)
+                {
+                    lastUpdateTime = realTime;
+                    lastRosaceUpdateTime = Rosace.time;
+                }
             }
 
-            public static void UpdateList(IEnumerable<IRosaceUpdate> list)
+            public static void UpdateList(List<IRosaceUpdate> list)
             {
                 foreach (var upd in list)
                     if (upd.IsValidUpdater())
                         upd.RosaceUpdate(ctParams);
             }
 
-            public static void PostUpdateList(IEnumerable<IRosaceUpdate> list)
+            public static void PostUpdateList(List<IRosaceUpdate> list)
             {
                 foreach (var upd in list)
                     if (upd.IsValidUpdater())
@@ -94,7 +113,7 @@ public class Rosace
 
         public float deltaTime { get; private set; }
         public float constantMultiplier { get; private set; }
-        public float time { get; private set; }
+        //public float time { get; private set; }
 
         public void UpdateGameObject(GameObject obj)
         {
@@ -114,8 +133,9 @@ public class Rosace
     {
         RosaceUpdateContext.Init();
 
-        ComReg.AddCom("rosace.update", (bool val) => RosaceUpdateContext.doUpdate = val);
-        ComReg.AddCom("rosace.delta", (float val) => RosaceUpdateContext.delta = val);
+        ComReg.AddCom("rosace.updatescale", (float val) => Rosace.updateScale = val);
+        ComReg.AddCom("rosace.timescale", (float val) => Rosace.timeScale = val);
+        ComReg.AddCom("rosace.delta", (float val) => Rosace.delta = val);
 
         Debug.Log("ROSACE INJECTED");
     }

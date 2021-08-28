@@ -34,7 +34,7 @@ public static class ComReg
     {
         AddCom("help", () => LogComs(), "Prints all commands");
         AddCom("helpcom", (string s) => LogComDesc(s), "Prints help about a command");
-        AddCom("log", (string s) => Debug.Log(s), "Prints to the log");
+        AddCom("info", (string s) => Debug.Log(s), "Prints to the log");
         AddCom("warn", (string s) => Debug.LogWarning(s), "Prints a warning");
         AddCom("error", (string s) => Debug.LogError(s), "Prints an error");
     }
@@ -150,6 +150,12 @@ public static class ComReg
         return false;
     }
 
+    /// <summary>
+    /// Runs a command.  Returns true if a valid command was found, false if not.  If there are invalid parameters or other errors but the command
+    /// is a registered command, will return true.
+    /// </summary>
+    /// <param name="commandString"></param>
+    /// <returns></returns>
     public static bool RunCom(string commandString)
     {
         string[] vars = commandString.Split(' ');
@@ -171,7 +177,14 @@ public static class ComReg
                 return false;
             }
             Debug.Log($"runnning com: {commandString}");
-            c.method.Invoke(c.sourceObject, new object[] { commandString.MinusFirst(command.Length + 1) });
+            try
+            {
+                c.method.Invoke(c.sourceObject, new object[] { commandString.MinusFirst(command.Length + 1) });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
             return true;
         }
 
@@ -186,10 +199,25 @@ public static class ComReg
         object[] objParams = new object[c.parameters.Length];
         for (int i = 0; i < objParams.Length; i++)
         {
-            objParams[i] = ConvertUtil.ConvertFromStr(c.parameters[i].ParameterType, vars[i + 1]);
+            try
+            {
+                objParams[i] = ConvertUtil.ConvertFromStr(c.parameters[i].ParameterType, vars[i + 1]);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return true;
+            }
         }
 
-        c.method.Invoke(c.sourceObject, objParams);
+        try
+        {
+            c.method.Invoke(c.sourceObject, objParams);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
         return true;
     }
 
