@@ -33,4 +33,12 @@ public class AssetUtil
 
         return asset;
     }
+
+    public static string GetSelectedObjectRelativePath()
+    {
+        string path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+
+        path = path.Substring(0, path.LastIndexOf('/') + 1);
+        return path;
+    }
 }
