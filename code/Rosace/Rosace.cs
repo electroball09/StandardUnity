@@ -78,8 +78,6 @@ public class Rosace
 
                     Physics.Simulate(ctParams.deltaTime);
 
-                    Physics.SyncTransforms();
-
                     Profiler.BeginSample("Rosace Update");
                     UpdateList(rosaceUpdaters);
                     Profiler.EndSample();
@@ -87,6 +85,10 @@ public class Rosace
                     Profiler.BeginSample("Rosace Post Update");
                     PostUpdateList(rosaceUpdaters);
                     Profiler.EndSample();
+
+                    Physics.SyncTransforms();
+
+
                 }
 
                 if (numUpdates > 0)
